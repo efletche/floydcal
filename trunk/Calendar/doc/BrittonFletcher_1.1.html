@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+	<TITLE></TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 2.0  (Win32)">
+	<META NAME="AUTHOR" CONTENT="Nathan Britton">
+	<META NAME="CREATED" CONTENT="20070712;21183492">
+	<META NAME="CHANGEDBY" CONTENT="Nathan Britton">
+	<META NAME="CHANGED" CONTENT="20070713;21502450">
+	<STYLE>
+	<!--
+		@page { size: 8.5in 11in; margin: 0.79in }
+		P { margin-bottom: 0.08in }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<P STYLE="margin-bottom: 0in"><U><B>Revision Control</B></U><SPAN STYLE="text-decoration: none"><B>:</B></SPAN></P>
+<P STYLE="margin-bottom: 0in">-subversion repository hosted by Google
+Code</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><U><B>Division of Work</B></U><SPAN STYLE="text-decoration: none"><B>:</B></SPAN></P>
+<P STYLE="margin-bottom: 0in">Nathan: Interface design, GUI
+implementation, list sorting algorithm, testing</P>
+<P STYLE="margin-bottom: 0in">Eric: iCal file system, import/export
+system</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><U><B>iCal Progress</B></U><SPAN STYLE="text-decoration: none"><B>:</B></SPAN></P>
+<P STYLE="margin-bottom: 0in">None as of yet</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><U><B>Architecture</B></U><SPAN STYLE="text-decoration: none"><B>:</B></SPAN></P>
+<P STYLE="margin-bottom: 0in">2 wyPython GUI windows:</P>
+<P STYLE="margin-bottom: 0in">Calendar window displays the days of
+the month. Days with events are marked, current date is highlighted.</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in">Event window displays a checklist of
+tasks for the day. There wil be an option to save the event(s) of the
+day in an iCal format.</P>
+<P STYLE="margin-bottom: 0in">(Calendar GUI and iCal system low
+priority)</P>
+<P STYLE="margin-bottom: 0in; font-style: normal"><BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-style: normal"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><I>Manager Class</I></P>
+<P STYLE="margin-bottom: 0in; font-style: normal"><FONT SIZE=2><B>variables</B></FONT></P>
+<P STYLE="margin-bottom: 0in; font-style: normal; font-weight: medium">
+<FONT SIZE=3>-listHead</FONT></P>
+<P STYLE="margin-bottom: 0in"><FONT SIZE=2><B>functions</B></FONT></P>
+<P STYLE="margin-bottom: 0in">nextDay()</P>
+<P STYLE="margin-bottom: 0in">previousDay()</P>
+<P STYLE="margin-bottom: 0in">addEntry()</P>
+<P STYLE="margin-bottom: 0in">removeEntry()</P>
+<P STYLE="margin-bottom: 0in">editEntry()</P>
+<P STYLE="margin-bottom: 0in; font-style: normal">sort()</P>
+<P STYLE="margin-bottom: 0in">importTasks()</P>
+<P STYLE="margin-bottom: 0in">exportTasks()</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-style: normal">The exportTasks
+function saves all the calendar tasks&mdash;task, errands, and
+event&mdash;into a *.html or *.ics file The importTasks function
+loads the compatible *.html or *.ics data into each calendar day&rsquo;s
+linked list.</P>
+<P STYLE="margin-bottom: 0in; font-style: normal"><BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-style: normal"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><I>Calendar Class</I></P>
+<P STYLE="margin-bottom: 0in; font-style: normal"><FONT SIZE=2><B>variables</B></FONT></P>
+<P STYLE="margin-bottom: 0in">-currentDate</P>
+<P STYLE="margin-bottom: 0in">-Linked list of Date objects</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><I>Date Class</I></P>
+<P STYLE="margin-bottom: 0in; font-style: normal"><FONT SIZE=2><B>variables</B></FONT></P>
+<P STYLE="margin-bottom: 0in">-isActive</P>
+<P STYLE="margin-bottom: 0in">-hasEvent</P>
+<P STYLE="margin-bottom: 0in">-Linked list of Entry objects</P>
+<P STYLE="margin-bottom: 0in"><FONT SIZE=2><B>functions</B></FONT></P>
+<P STYLE="margin-bottom: 0in">-sort()</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><I>Task Class</I></P>
+<P STYLE="margin-bottom: 0in; font-style: normal"><FONT SIZE=2><B>variables</B></FONT></P>
+<P STYLE="margin-bottom: 0in">-title</P>
+<P STYLE="margin-bottom: 0in">-isComplete</P>
+<P STYLE="margin-bottom: 0in">-date &lt;-redundant data to allow an
+entry to be saved independent from it's list</P>
+<P STYLE="margin-bottom: 0in"><FONT SIZE=2><B>functions</B></FONT></P>
+<P STYLE="margin-bottom: 0in">-complete()</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><I>Errand Class</I> is-a Task</P>
+<P STYLE="margin-bottom: 0in"><FONT SIZE=2><B>variables</B></FONT></P>
+<P STYLE="margin-bottom: 0in">-location</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><I>Event Class</I> is-a Task</P>
+<P STYLE="margin-bottom: 0in; font-style: normal"><FONT SIZE=2><B>variables</B></FONT></P>
+<P STYLE="margin-bottom: 0in">startTime</P>
+<P STYLE="margin-bottom: 0in">duration</P>
+<P STYLE="margin-bottom: 0in">timeLeft</P>
+<P STYLE="margin-bottom: 0in">isExpired</P>
+<P STYLE="margin-bottom: 0in">&lt;optional&gt;</P>
+<P STYLE="margin-bottom: 0in">-location</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><U><B>Explanation</B></U><SPAN STYLE="text-decoration: none"><B>:</B></SPAN></P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; text-decoration: none">
+The calendar system maintains a minimalist to-do list for every day.
+Tasks are arranged in order of importance with time sensitive tasks,
+or &quot;events&quot; at the top of the list (in temporal order),
+location sensitive &quot;errands&quot; with second priority and
+flexible tasks (that can be done anytime, anywhere) at the bottom of
+the list. Lists can be edited dynamically, and are sorted
+dynamically.</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; text-decoration: none">
+Each task has a <U>title</U> and the option to add a <U>time</U>,
+<U>duration</U>, and <U>location</U>. The interface makes it easy to
+add the information the user cares about without requiring erroneous
+data. The events are intrinsically linked to the associated&nbsp;<U>date</U>.
+All 5 minimum requirements are accounted for.</P>
+</BODY>
+</HTML>
