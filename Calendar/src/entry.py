@@ -1,20 +1,30 @@
 class entry:
     "A basic to-do entry"
-    def __init__(self, name):
-        self.name = name
+    title = ''
+    isComplete = 0
+    date = ''
+    def __init__(self, initTitle):
+        self.title = initTitle
         self.isComplete = 0
-        self.title = ''
         self.date = ''
+
+    def setDate(self, newDate):
+        self.date = newDate
 
 class task(entry):
     "A basic entry w/no location or date"
+    def __init__(self):
+        if self.title == '':
+            print 'ERROR, no name'
 
 class errand(entry):
     location = ''
-    def __init__(self, loc):
-        self.location = loc
+    def __init__(self, inputLocation):
+        self.location = inputLocation
 
 class event(entry):
     time = ''
     location = ''
+    def __init__(self, inputTime):
+        self.time = inputTime
 
