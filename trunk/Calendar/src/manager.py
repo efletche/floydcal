@@ -4,18 +4,32 @@
 class manager:
     "Class that manages the calendar"
     listHead = 'null'
-    def addEntry(date,title):
-        #entry.title = input('Entry:')
-        #print (entry.title)
-        pass
+    def __init__(self):
+        print 'new manager class instantiated'
+
+    def addEntry(self, date, title):
+        newEntry = entry(title)
+        newEntry.date = date
+        print 'entry added'
+        print newEntry.title
+        self.listHead = [newEntry]
+
+    def addEntry(entry):
+        print 'entry added'
+
     def editEntry(entry, title, location, time, duration):
-        pass
+        print 'entry changed'
+
     def removeEntry(entry):
-        pass
+        print 'entry deleted'
+
     def sort(date):
-        pass
+        print 'list re-sorted'
+
     def complete(entry):
-        pass
+        print 'task completed'
+
     def exportEntry(entry):
-        pass
+        print 'entry saved'
+
     print 'done'
