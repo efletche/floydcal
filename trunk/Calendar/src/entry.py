@@ -1,8 +1,10 @@
 class entry:
     "A basic to-do entry"
-    isComplete = 0
-    title = ''
-    date = ''
+    def __init__(self, name):
+        self.name = name
+        self.isComplete = 0
+        self.title = ''
+        self.date = ''
 
 class task(entry):
     "A basic entry w/no location or date"
