@@ -2,7 +2,7 @@
 
 class manager:
     "Class that manages the calendar"
-    listHead = 'null'
+    listHead = []
     def __init__(self):
         print 'new manager class instantiated'
     def addEntry(self, date, title):
@@ -19,8 +19,8 @@ class manager:
             print 'entry added'
             print newEntry.title
             self.listHead = [newEntry]
-    def addEntry(entry):
-        print 'entry added'
+    def addEntry(self, newEntry):
+        print newEntry.title
     def editEntry(entry, title, location, time, duration):
         """edits specified entry in the list"""
         pEntry = entry(title)
