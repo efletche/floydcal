@@ -1,15 +1,22 @@
+
+from datetime import date
+
 class entry:
     "A basic to-do entry"
     title = ''
     isComplete = 0
-    date = ''
-    def __init__(self, initTitle):
+    date = date(2007, 1, 1)
+
+    def __init__(self, initTitle, initDate):
         self.title = initTitle
+        self.date = initDate
         self.isComplete = 0
-        self.date = ''
 
     def setDate(self, newDate):
         self.date = newDate
+
+    def setTitle(self, newTitle):
+        self.title = newTitle
 
 class task(entry):
     "A basic entry w/no location or date"
