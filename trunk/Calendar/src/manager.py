@@ -2,14 +2,22 @@
 from datetime import date
 
 
-class manager:
+class manager(object):
     """Class that manages the calendar"""
     #dateList essentially is the calendar
     #takes on the form of:
     #[[date(2007, 7, 20), [1, 2, 3]], [date(2007, 7, 21), [1, 2, 3, 4]], [date(2007, 7, 22), [1, 2]]]
+    #   where the lists of numbers([1, 2, 3]) represent lists of to-do items for the corresponding day
     dateList = []
     def __init__(self):
         print 'new manager class instantiated'
+
+    def __add__(self, other):
+        if type(other) is not entry:
+            print "ERROR, cannot add anything but an entry to a manager"
+        else:
+            temp = self.addEntry(other.title, other.date)
+            self.editEntry(temp, other.title, other.location, other.time, other.duration)
 
     def addEntry(self, title, date):                     #Adds a new entry to a Calendar list
         """Adds the entry to the daylist"""
@@ -39,6 +47,7 @@ class manager:
                         self.dateList.append(subList)
                         break
             print 'entry', newEntry.title, 'added'
+        return newEntry
 
     def editEntry(self, tEntry, newTitle, newLocation, newTime, newDuration):
         """edits specified entry in the list"""
@@ -56,6 +65,7 @@ class manager:
             elif i == (len(self.dateList)-1):
                 print 'entry', tEntry.title, 'not found'
                 break
+        self.sort(tEntry.date)
 
     def removeEntry(self, entry):
         print 'entry deleted'
@@ -68,12 +78,14 @@ class manager:
                 for y in range(1, len(x[1])):
                     for i in range(len(x[1])-y):
                         j = i + 1
-                        #if x[1][i] > x[1][j]:
-                        if ((x[1][i].time is None) and (x[1][j].time is not None)) or ((x[1][i].location is None) and (x[1][j].location is not None)) or (((x[1][i].time and x[1][j].time) is not None) and (x[1][i].time > x[1][j].time)):
+            #if ((x[1][i].time is None) and (x[1][j].time is not None))
+            #or ((x[1][i].location is None) and (x[1][j].location is not None))
+            #or (((x[1][i].time and x[1][j].time) is not None)
+                #and (x[1][i].time > x[1][j].time)):
+                        if x[1][i] > x[1][j]:
                             temp = x[1][j]
                             x[1][j] = x[1][i]
                             x[1][i] = temp
-                            print i
                 break
         print 'list re-sorted'
 
