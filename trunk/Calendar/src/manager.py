@@ -12,7 +12,7 @@ class manager:
         print 'new manager class instantiated'
 
     def addEntry(self, title, date):                     #Adds a new entry to a Calendar list
-        """adds the entry to the daylist"""
+        """Adds the entry to the daylist"""
         newEntry = entry(title, date)
         if newEntry.title == '':
             #throw error
@@ -40,7 +40,7 @@ class manager:
                         break
             print 'entry', newEntry.title, 'added'
 
-    def editEntry(entry, title, location, time, duration):
+    def editEntry(self, entry, title, location, time, duration):
         """edits specified entry in the list"""
         pEntry = entry(title)
         if pEntry == '':
@@ -54,15 +54,20 @@ class manager:
             print 'entry changed'
             pass
 
-    def removeEntry(entry):
+    def removeEntry(self, entry):
         print 'entry deleted'
 
-    def sort(date):
+    def sort(self, date):
+        for x in self.dateList:
+            if x[0] == date:
+                #sort x[1]
+                print x[1]
         print 'list re-sorted'
 
-    def complete(entry):
+    def complete(self, entry):
         print 'task completed'
 
-    def exportEntry(entry):
+    def exportEntry(self, entry):
         print 'entry saved'
+
 
