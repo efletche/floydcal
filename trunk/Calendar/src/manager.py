@@ -54,7 +54,7 @@ class manager:
                     #If the new entry is of an indexed date
                     if self.dateList[i][0] == tEntry.date:    
                         for j in range(len(self.dateList[i][1])):
-                            if dateList[i][0][j] == tEntry:
+                            if self.dateList[i][0][j] == tEntry:
                                 #edit entry if entry not null(none)
                                 if title is not None:      tEntry.title = title 
                                 if location is not None:   tEntry.location = location
