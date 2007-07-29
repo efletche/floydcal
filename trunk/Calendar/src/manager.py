@@ -40,7 +40,7 @@ class manager:
                         break
             print 'entry', newEntry.title, 'added'
 
-    def editEntry(self, tEntry, title, location, time, duration):
+    def editEntry(self, tEntry, newTitle, newLocation, newTime, newDuration):
         """edits specified entry in the list"""
         if tEntry == '':
             #throw error
@@ -56,10 +56,10 @@ class manager:
                         for j in range(len(self.dateList[i][1])):
                             if self.dateList[i][0][j] == tEntry:
                                 #edit entry if entry not null(none)
-                                if title is not None:      tEntry.title = title 
-                                if location is not None:   tEntry.location = location
-                                if time is not None:       tEntry.time = time
-                                if duration is not None:   tEntry.duration = duration
+                                if newTitle is not None:      tEntry.title = newTitle 
+                                if newLocation is not None:   tEntry.location = newLocation
+                                if newTime is not None:       tEntry.time = newTime
+                                if newDuration is not None:   tEntry.duration = newDuration
                                 print 'entry ', tEntry.title, ' edited'
                                 break
                             else:
