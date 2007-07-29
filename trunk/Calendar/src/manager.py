@@ -11,7 +11,6 @@ class manager(object):
     dateList = []
     def __init__(self):
         print 'new manager class instantiated'
-
     def __add__(self, other):
         if type(other) is not entry:
             print "ERROR, cannot add anything but an entry to a manager"
@@ -66,10 +65,19 @@ class manager(object):
                 print 'entry', tEntry.title, 'not found'
                 break
         self.sort(tEntry.date)
-
-    def removeEntry(self, entry):
-        print 'entry deleted'
-
+    def removeEntry(self, rmEntry):
+        """Removes Entry"""
+        if rmEntry is none:
+            #throw error
+            try:
+                raise entryException()
+            except entryException, e:
+                print 'Null entry :', e.value
+        else:
+            for i in range(len(self.dateList)):
+            #remove entry
+                self.dateList[i][1][j].remove(rmEntry)
+                print 'entry deleted'
     def sort(self, date):
         for x in self.dateList:
             if x[0] == date:
@@ -88,8 +96,6 @@ class manager(object):
                             x[1][i] = temp
                 break
         print 'list re-sorted'
-
-
     def complete(self, entry):
         for i in range(len(self.dateList)):
             if self.dateList[i][0] is entry.date:
@@ -99,8 +105,5 @@ class manager(object):
                         break
                 break
         print 'task completed'
-
     def exportEntry(self, entry):
         print 'entry saved'
-
-
