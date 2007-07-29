@@ -22,12 +22,12 @@ class manager(object):
     def addEntry(self, title, date):                     #Adds a new entry to a Calendar list
         """Adds the entry to the daylist"""
         newEntry = entry(title, date)
-        if newEntry.title == '':
+        if newEntry.title == None:
             #throw error
             try:
                 raise entryException()
             except entryException, e:
-                print 'Nonexistant entry found :', e.value
+                print 'Invalid entry: must have title'
         else:
             if len(self.dateList) == 0:                         #If there is nothing in the calendar yet
                     subList = [newEntry.date, [newEntry]]           #Add the first date and it's first entry
