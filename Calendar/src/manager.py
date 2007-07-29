@@ -52,11 +52,11 @@ class manager:
             for i in range(len(self.dateList)):    #i indexes each date
                     #print self.dateList[i][0], "<-->", newEntry.date
                     #If the new entry is of an indexed date
-                    if self.dateList[i][0] == tEntry.date:    
+                    if self.dateList[i][0] == tEntry.date:
                         for j in range(len(self.dateList[i][1])):
-                            if self.dateList[i][0][j] == tEntry:
+                            if self.dateList[i][1][j] == tEntry:
                                 #edit entry if entry not null(none)
-                                if newTitle is not None:      tEntry.title = newTitle 
+                                if newTitle is not None:      tEntry.title = newTitle
                                 if newLocation is not None:   tEntry.location = newLocation
                                 if newTime is not None:       tEntry.time = newTime
                                 if newDuration is not None:   tEntry.duration = newDuration
@@ -66,12 +66,9 @@ class manager:
                                 print 'entry ', tEntry.title, ' not found'
                                 break
                     #If the entry is at the end of the list
-                    elif i == (len(self.dateList)-1):           
-                        #subList = [newEntry.date, [newEntry]]               #Add the new day and it's 1st entry to the end
-                        #self.dateList.append(subList)
+                    elif i == (len(self.dateList)-1):
                         print 'entry ', tEntry.title, ' not found'
                         break
-
             print 'entry changed'
 
     def removeEntry(self, entry):
@@ -80,9 +77,20 @@ class manager:
     def sort(self, date):
         for x in self.dateList:
             if x[0] == date:
-                #sort x[1]
-                print x[1]
+                if len(x[1]) is 1:
+                    break
+                for y in range(1, len(x[1])):
+                    for i in range(len(x[1])):
+                        j = y + 1
+                        #if x[1][i] > x[1][j]:
+                        if ((x[1][i].time is None) and (x[1][j].time is not None)) or ((x[1][i].location is None) and (x[1][j].location is not None)) or (x[1][i].time > x[1][j].time):
+                            temp = x[1][j]
+                            x[1][j] = x[1][i]
+                            x[1][i] = temp
+                            print i
+                break
         print 'list re-sorted'
+
 
     def complete(self, entry):
         print 'task completed'
