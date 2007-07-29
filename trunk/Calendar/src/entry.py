@@ -13,7 +13,7 @@ class entry:
     def __init__(self, initTitle, initDate):
         self.title = initTitle
         self.date = initDate
-        self.isComplete = 0
+        self.isComplete = False
 
 
 class entryException(Exception):

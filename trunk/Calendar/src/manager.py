@@ -51,15 +51,11 @@ class manager:
                         if newLocation is not None:   tEntry.location = newLocation
                         if newTime is not None:       tEntry.time = newTime
                         if newDuration is not None:   tEntry.duration = newDuration
-                        print 'entry ', tEntry.title, ' edited'
-                        break
-                    else:
-                        print 'entry ', tEntry.title, ' not found'
+                        print 'entry', tEntry.title, 'edited'
                         break
             elif i == (len(self.dateList)-1):
-                print 'entry ', tEntry.title, ' not found'
+                print 'entry', tEntry.title, 'not found'
                 break
-        print 'entry changed'
 
     def removeEntry(self, entry):
         print 'entry deleted'
@@ -70,10 +66,10 @@ class manager:
                 if len(x[1]) is 1:
                     break
                 for y in range(1, len(x[1])):
-                    for i in range(len(x[1])):
-                        j = y + 1
+                    for i in range(len(x[1])-y):
+                        j = i + 1
                         #if x[1][i] > x[1][j]:
-                        if ((x[1][i].time is None) and (x[1][j].time is not None)) or ((x[1][i].location is None) and (x[1][j].location is not None)) or (x[1][i].time > x[1][j].time):
+                        if ((x[1][i].time is None) and (x[1][j].time is not None)) or ((x[1][i].location is None) and (x[1][j].location is not None)) or (((x[1][i].time and x[1][j].time) is not None) and (x[1][i].time > x[1][j].time)):
                             temp = x[1][j]
                             x[1][j] = x[1][i]
                             x[1][i] = temp
@@ -83,6 +79,13 @@ class manager:
 
 
     def complete(self, entry):
+        for i in range(len(self.dateList)):
+            if self.dateList[i][0] is entry.date:
+                for j in range(len(self.dateList[i][1])):
+                    if self.dateList[i][1][j] is entry:
+                        self.dateList[i][1][j].isComplete = True
+                        break
+                break
         print 'task completed'
 
     def exportEntry(self, entry):
