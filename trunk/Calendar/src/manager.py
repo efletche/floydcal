@@ -42,34 +42,24 @@ class manager:
 
     def editEntry(self, tEntry, newTitle, newLocation, newTime, newDuration):
         """edits specified entry in the list"""
-        if tEntry == '':
-            #throw error
-            try:
-                raise entryException()
-            except entryException, e:
-                print 'Nonexistant entry found :', e.value
-        else:
-            for i in range(len(self.dateList)):    #i indexes each date
-                    #print self.dateList[i][0], "<-->", newEntry.date
-                    #If the new entry is of an indexed date
-                    if self.dateList[i][0] == tEntry.date:
-                        for j in range(len(self.dateList[i][1])):
-                            if self.dateList[i][1][j] == tEntry:
-                                #edit entry if entry not null(none)
-                                if newTitle is not None:      tEntry.title = newTitle
-                                if newLocation is not None:   tEntry.location = newLocation
-                                if newTime is not None:       tEntry.time = newTime
-                                if newDuration is not None:   tEntry.duration = newDuration
-                                print 'entry ', tEntry.title, ' edited'
-                                break
-                            else:
-                                print 'entry ', tEntry.title, ' not found'
-                                break
-                    #If the entry is at the end of the list
-                    elif i == (len(self.dateList)-1):
+        for i in range(len(self.dateList)):
+            if self.dateList[i][0] == tEntry.date:
+                for j in range(len(self.dateList[i][1])):
+                    if self.dateList[i][1][j] == tEntry:
+                        #edit entry if entry not null(none)
+                        if newTitle is not None:      tEntry.title = newTitle
+                        if newLocation is not None:   tEntry.location = newLocation
+                        if newTime is not None:       tEntry.time = newTime
+                        if newDuration is not None:   tEntry.duration = newDuration
+                        print 'entry ', tEntry.title, ' edited'
+                        break
+                    else:
                         print 'entry ', tEntry.title, ' not found'
                         break
-            print 'entry changed'
+            elif i == (len(self.dateList)-1):
+                print 'entry ', tEntry.title, ' not found'
+                break
+        print 'entry changed'
 
     def removeEntry(self, entry):
         print 'entry deleted'
