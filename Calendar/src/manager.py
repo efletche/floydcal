@@ -1,6 +1,7 @@
 #!/usr/bin/python
 from datetime import date
-
+from datetime import time
+import os
 
 class manager(object):
     """Class that manages the calendar"""
@@ -11,12 +12,14 @@ class manager(object):
     dateList = []
     def __init__(self):
         print 'new manager class instantiated'
+
     def __add__(self, other):
         if type(other) is not entry:
             print "ERROR, cannot add anything but an entry to a manager"
         else:
             temp = self.addEntry(other.title, other.date)
             self.editEntry(temp, other.title, other.location, other.time, other.duration)
+
 
     def addEntry(self, title, date):                     #Adds a new entry to a Calendar list
         """Adds the entry to the daylist"""
@@ -65,6 +68,8 @@ class manager(object):
                 print 'entry', tEntry.title, 'not found'
                 break
         self.sort(tEntry.date)
+
+
     def removeEntry(self, rmEntry):
         """Removes Entry"""
         if rmEntry is none:
@@ -78,6 +83,8 @@ class manager(object):
             #remove entry
                 self.dateList[i][1][j].remove(rmEntry)
                 print 'entry deleted'
+
+
     def sort(self, date):
         for x in self.dateList:
             if x[0] == date:
@@ -96,6 +103,8 @@ class manager(object):
                             x[1][i] = temp
                 break
         print 'list re-sorted'
+
+
     def complete(self, entry):
         for i in range(len(self.dateList)):
             if self.dateList[i][0] is entry.date:
@@ -105,5 +114,98 @@ class manager(object):
                         break
                 break
         print 'task completed'
-    def exportEntry(self, entry):
+
+    def export(self, target):
+        mkTrunk = True
+        for f in os.listdir('/'):
+            if f == 'floydcal':
+                mkTrunk = False
+        if mkTrunk:
+            os.mkdir('floydcal')
+
+        targetDate = None
+        if type(target) is entry:
+            targetDate = target.date
+        elif type(target) is date:
+            targetDate = target
+        else: print "ERROR, wrong datatype passed"
+
+        yearString = str(targetDate.year)
+        monthString = str(targetDate.month)
+        dayString = str(targetDate.day)
+        mkYear = True
+        mkMonth = True
+        mkDay = True
+        for f in os.listdir('/floydcal'):
+            if f == yearString:
+                mkYear = False
+                for g in os.listdir('/floydcal/'+yearString):
+                    if g == monthString:
+                        mkMonth = False
+                        for h in os.listdir('/floydcal/'+yearString+'/'+monthString):
+                            if h == dayString:
+                                mkDay = False
+                                break
+                        break
+                break
+        if mkYear:
+            os.mkdir('/floydcal/'+yearString)
+        if mkMonth:
+            os.mkdir('/floydcal/'+yearString+'/'+monthString)
+        if mkDay:
+            os.mkdir('/floydcal/'+yearString+'/'+monthString+'/'+dayString)
+
+
+        path = '/floydcal/'+yearString+'/'+monthString+'/'+dayString
+
+        if type(target) is entry:
+            self.exportEntry(target, path)
+        elif type(target) is date:
+            for x in self.dateList:
+                if x[0] == target:
+                    for y in x[1]:
+                        self.exportEntry(y, path)
+                    break
+
         print 'entry saved'
+
+
+    def exportEntry(self, entry, path):
+        apNum = ''
+        num = 0
+        for i in os.listdir(path):
+            if (entry.title+apNum+'.ics') == i:
+                num+=1
+                apNum = str(num)
+
+        beginDateString = str(entry.date.year)+str(entry.date.month)+str(entry.date.day)
+        endDateString = beginDateString
+        if entry.time is not None:
+            beginDateString = beginDateString+"T"+str(entry.time.hour)+str(entry.time.min)+'00'
+
+        if entry.duration is not None:
+            hour = entry.time.hour
+            min = entry.time.min
+            deltaHrs = entry.duration/60
+            deltaMin = entry.duration - (deltaHrs*60)
+            hour += deltaHrs
+            min += deltaMin
+            endDateString = endDateString +"T"+str(hour)+str(min)+'00'
+
+
+        k = file(path+'/'+entry.title+apNum+'.ics', 'w')
+        k.write("BEGIN:VCALENDAR\n")
+        k.write("BEGIN:VTIMEZONE\n")
+        k.write("TZID:Pacific/Honolulu\n")
+        k.write("BEGIN:STANDARD\n")
+        k.write("TZNAME:HST\n")
+        k.write("END:STANDARD\n")
+        k.write("END:VTIMEZONE\n")
+        k.write("BEGIN:VEVENT\n")
+        k.write("DTSTART:"+beginDateString+"\n") #begin date/time
+        k.write("DTEND:"+endDateString+"\n") #end
+        if entry.title is not None: k.write("SUMMARY:"+entry.title+"\n")
+        if entry.location is not None: k.write("LOCATION:"+entry.location+"\n")
+        k.write("END:VEVENT\n")
+        k.write("END:VCALENDAR")
+        k.close()
