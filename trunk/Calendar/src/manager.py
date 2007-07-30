@@ -68,21 +68,26 @@ class manager(object):
                 print 'entry', tEntry.title, 'not found'
                 break
         self.sort(tEntry.date)
+        return tEntry
 
 
     def removeEntry(self, rmEntry):
         """Removes Entry"""
-        if rmEntry is none:
+        if type(rmEntry) is not entry:
             #throw error
             try:
                 raise entryException()
             except entryException, e:
-                print 'Null entry :', e.value
+                print 'ERROR, must pass an entry instance'
         else:
             for i in range(len(self.dateList)):
-            #remove entry
-                self.dateList[i][1][j].remove(rmEntry)
-                print 'entry deleted'
+                if self.dateList[i][0] == rmEntry.date:
+                    for j in range(len(self.dateList[i][1])):
+                        if self.dateList[i][1][j] == rmEntry:
+                            self.dateList[i][1].remove(rmEntry)
+                            if len(self.dateList[i][1]) == 0:
+                                self.dateList.remove(self.dateList[i])
+                            print 'entry deleted'
 
 
     def sort(self, date):
