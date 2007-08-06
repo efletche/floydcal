@@ -1,6 +1,7 @@
 #!/usr/bin/python
 from datetime import date
 from datetime import time
+import datetime
 import os
 
 class manager(object):
@@ -24,12 +25,9 @@ class manager(object):
     def addEntry(self, title, date):                     #Adds a new entry to a Calendar list
         """Adds the entry to the daylist"""
         newEntry = entry(title, date)
-        if newEntry.title == None:
-            #throw error
-            try:
-                raise entryException()
-            except entryException, e:
-                print 'Invalid entry: must have title'
+        if (type(title) is not str) or (type(date) is not datetime.date):
+            print 'Invalid entry: must have title'
+            newEntry = None
         else:
             if len(self.dateList) == 0:                         #If there is nothing in the calendar yet
                     subList = [newEntry.date, [newEntry]]           #Add the first date and it's first entry
@@ -74,11 +72,7 @@ class manager(object):
     def removeEntry(self, rmEntry):
         """Removes Entry"""
         if type(rmEntry) is not entry:
-            #throw error
-            try:
-                raise entryException()
-            except entryException, e:
-                print 'ERROR, must pass an entry instance'
+            print 'ERROR, must pass an entry instance'
         else:
             for i in range(len(self.dateList)):
                 if self.dateList[i][0] == rmEntry.date:
@@ -91,23 +85,26 @@ class manager(object):
 
 
     def sort(self, date):
-        for x in self.dateList:
-            if x[0] == date:
-                if len(x[1]) is 1:
+        if type(date) is not datetime.date:
+            print 'ERROR, must pass an entry instance'
+        else:
+            for x in self.dateList:
+                if x[0] == date:
+                    if len(x[1]) is 1:
+                        break
+                    for y in range(1, len(x[1])):
+                        for i in range(len(x[1])-y):
+                            j = i + 1
+                #if ((x[1][i].time is None) and (x[1][j].time is not None))
+                #or ((x[1][i].location is None) and (x[1][j].location is not None))
+                #or (((x[1][i].time and x[1][j].time) is not None)
+                    #and (x[1][i].time > x[1][j].time)):
+                            if x[1][i] > x[1][j]:
+                                temp = x[1][j]
+                                x[1][j] = x[1][i]
+                                x[1][i] = temp
                     break
-                for y in range(1, len(x[1])):
-                    for i in range(len(x[1])-y):
-                        j = i + 1
-            #if ((x[1][i].time is None) and (x[1][j].time is not None))
-            #or ((x[1][i].location is None) and (x[1][j].location is not None))
-            #or (((x[1][i].time and x[1][j].time) is not None)
-                #and (x[1][i].time > x[1][j].time)):
-                        if x[1][i] > x[1][j]:
-                            temp = x[1][j]
-                            x[1][j] = x[1][i]
-                            x[1][i] = temp
-                break
-        print 'list re-sorted'
+            print 'list re-sorted'
 
 
     def complete(self, entry):
