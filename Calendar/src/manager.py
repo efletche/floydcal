@@ -186,11 +186,11 @@ class manager(object):
         beginDateString = str(entry.date.year)+str(entry.date.month)+str(entry.date.day)
         endDateString = beginDateString
         if entry.time is not None:
-            beginDateString = beginDateString+"T"+str(entry.time.hour)+str(entry.time.min)+'00'
+            beginDateString = beginDateString+"T"+str(entry.time.hour)+str(entry.time.minute)+'00'
 
         if entry.duration is not None:
             hour = entry.time.hour
-            min = entry.time.min
+            min = entry.time.minute
             deltaHrs = entry.duration/60
             deltaMin = entry.duration - (deltaHrs*60)
             hour += deltaHrs
