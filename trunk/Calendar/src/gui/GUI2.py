@@ -22,10 +22,13 @@ class toDoList(wx.Frame):
         wxglade_tmp_menu.Append(wx.NewId(), "About", "", wx.ITEM_NORMAL)
         self.toDoList_menubar.Append(wxglade_tmp_menu, "Help")
         # Menu Bar end
+        # Date Selection
         self.previous = wx.Button(self, -1, "Previous")
         self.dateData = wx.StaticText(self, -1, "8/01/2007", style=wx.ALIGN_CENTRE)
         self.button_1 = wx.Button(self, -1, "Next")
+        # ListCtrl Cal_ControlList - The date's tasks
         self.Cal_ControlList = wx.ListCtrl(self, -1, style=wx.LC_REPORT|wx.LC_SORT_ASCENDING|wx.LC_HRULES|wx.LC_VRULES|wx.SUNKEN_BORDER)
+        # Edit(Add) Entry Panel  
         self.isComplete = wx.CheckBox(self, -1, "")
         self.title = wx.TextCtrl(self, -1, "")
         self.at = wx.StaticText(self, -1, "       at ")
@@ -35,16 +38,23 @@ class toDoList(wx.Frame):
         self.min = wx.SpinCtrl(self, -1, "", min=0, max=59)
         self.duration = wx.ComboBox(self, -1, choices=["", "15", "30", "45", "60", "75", "90", "105", "120", "135", "150", "165", "180", "195", "210", "225", "240", "255", "270", "285", "300"], style=wx.CB_DROPDOWN)
         self.inMinutes = wx.StaticText(self, -1, "minutes")
+        self.submit = wx.Button(self,100,"Submit")
+        
+        self.__set_properties()
+        self.__do_layout()
+        # end wxGlade
         #intialize list control columns
         self.Cal_ControlList.InsertColumn(0,"??",)
         self.Cal_ControlList.InsertColumn(1,"Title")
         self.Cal_ControlList.InsertColumn(2,"Location")
         self.Cal_ControlList.InsertColumn(3,"Time")
         self.Cal_ControlList.InsertColumn(4,"Duration")
-
-        self.__set_properties()
-        self.__do_layout()
-        # end wxGlade
+        # event - submitting an entry to the listctrl Cal_ControlList
+        wx.EVT_BUTTON(self,self.submit.GetId(), self.pushSubmit)
+        # event - selecting an entry to show on the Entry Panel
+        # event - changing a date
+        # event - exit program
+        
 
     def __set_properties(self):
         # begin wxGlade: toDoList.__set_properties
@@ -83,12 +93,18 @@ class toDoList(wx.Frame):
         entryData.Add((0, 0), 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.SHAPED, 25)
         entryData.Add(self.duration, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.SHAPED, 0)
         entryData.Add(self.inMinutes, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.SHAPED, 0)
+        entryData.Add(self.submit, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
         listFrame.Add(entryData, 0, wx.EXPAND, 0)
         self.SetSizer(listFrame)
         self.Layout()
         self.Centre()
         # end wxGlade
 
+    def pushSubmit(self, event):
+        #event that submits the entry panel contents to listCtrl
+        self.Cal_ControlList.InsertStringItem(row, self.title)
+        pass
+    
 # end of class toDoList
 
 
