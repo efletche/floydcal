@@ -87,13 +87,14 @@ class toDoList(wx.Frame):
         wx.EVT_MENU(self, ID_EXIT, self.exitCal)
         #wx.EVT_MENU(self, ID_HOWTO, self.exitCal)  #TODO:Help Function?
         wx.EVT_MENU(self, ID_ABOUT, self.onAbout)
-        #update view on listctrl at the end.("garbage collection")
-        self.updateView()
+        wx.EVT_MENU(self, ID_EXPORT, self.onExport)
 
 
         ###SETUP DATA STRUCTURE###
         self.m = manager()
-        self.i = 0
+
+        #update view on listctrl at the end.("garbage collection")
+        self.updateView()
 
     def __set_properties(self):
         # begin wxGlade: toDoList.__set_properties
@@ -176,16 +177,7 @@ class toDoList(wx.Frame):
 
         #Add to manager
         self.m + e      #'+' is overloaded to add an entry to a mangager
-
-        #test the control list will need to be replaced
-        dCom = self.m.dateList[0][1][self.i].isComplete
-        dTitle = self.m.dateList[0][1][self.i].title
-        dLoc = self.m.dateList[0][1][self.i].location
-        dTime = self.m.dateList[0][1][self.i].time.isoformat()
-        dDur = self.m.dateList[0][1][self.i].duration
-        self.Cal_ControlList.Append([dCom, dTitle, dLoc, dTime, dDur])
-
-        self.i += 1
+        self.updateView()
 
         print "GHAAAA!"
 
@@ -203,6 +195,10 @@ class toDoList(wx.Frame):
         dlg.ShowModal()
         dlg.Destroy()
 
+    def onExport(self, event):
+        #!!!NEEDS TO BE CHANGED TO THE DATE SELECTED!!!
+        self.m.export(date.today())
+
     def onItemSelected(self, event):
         #When user clicks on the entry on the list control, it should send the entry data to the entryplane
         self.currentItem = event.m_itemIndex
@@ -212,6 +208,22 @@ class toDoList(wx.Frame):
         pass
 
     def updateView(self):
+
+        self.Cal_ControlList.DeleteAllItems()
+        if len(self.m.dateList) is not 0:
+            for i in range(len(self.m.dateList[0][1])):
+                dCom = self.m.dateList[0][1][i].isComplete
+                dTitle = self.m.dateList[0][1][i].title
+                dLoc = self.m.dateList[0][1][i].location
+                dTime = self.m.dateList[0][1][i].time.isoformat()
+                dDur = str(self.m.dateList[0][1][i].duration)
+                #self.Cal_ControlList.InsertStringItem(i, "Title", dTitle)#[dCom, dTitle, dLoc, dTime, dDur])
+                #Now fill the list
+                self.Cal_ControlList.InsertStringItem(i, str(dCom))
+                self.Cal_ControlList.SetStringItem(i, 1, dTitle)
+                self.Cal_ControlList.SetStringItem(i, 2, dLoc)
+                self.Cal_ControlList.SetStringItem(i, 3, dTime)
+                self.Cal_ControlList.SetStringItem(i, 4, dDur)
         pass
 
 # end of class toDoList

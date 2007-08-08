@@ -110,18 +110,21 @@ class manager(object):
 
 
     def complete(self, entry):
+        a = 'task not found'
         for i in range(len(self.dateList)):
-            if self.dateList[i][0] is entry.date:
+            if self.dateList[i][0] == entry.date:
                 for j in range(len(self.dateList[i][1])):
                     if self.dateList[i][1][j] is entry:
                         self.dateList[i][1][j].isComplete = True
+                        a = 'task completed'
                         break
                 break
-        print 'task completed'
+        print a
 
     def export(self, target):
         mkTrunk = True
-        for f in os.listdir('/'):
+        print os.getcwd()
+        for f in os.listdir(os.getcwd() + '/'):
             if f == 'floydcal':
                 mkTrunk = False
         if mkTrunk:
@@ -140,27 +143,27 @@ class manager(object):
         mkYear = True
         mkMonth = True
         mkDay = True
-        for f in os.listdir('/floydcal'):
+        for f in os.listdir('floydcal'):
             if f == yearString:
                 mkYear = False
-                for g in os.listdir('/floydcal/'+yearString):
+                for g in os.listdir('floydcal/'+yearString):
                     if g == monthString:
                         mkMonth = False
-                        for h in os.listdir('/floydcal/'+yearString+'/'+monthString):
+                        for h in os.listdir('floydcal/'+yearString+'/'+monthString):
                             if h == dayString:
                                 mkDay = False
                                 break
                         break
                 break
         if mkYear:
-            os.mkdir('/floydcal/'+yearString)
+            os.mkdir('floydcal/'+yearString)
         if mkMonth:
-            os.mkdir('/floydcal/'+yearString+'/'+monthString)
+            os.mkdir('floydcal/'+yearString+'/'+monthString)
         if mkDay:
-            os.mkdir('/floydcal/'+yearString+'/'+monthString+'/'+dayString)
+            os.mkdir('floydcal/'+yearString+'/'+monthString+'/'+dayString)
 
 
-        path = '/floydcal/'+yearString+'/'+monthString+'/'+dayString
+        path = os.getcwd()+'/floydcal/'+yearString+'/'+monthString+'/'+dayString
 
         if type(target) is entry:
             self.exportEntry(target, path)
