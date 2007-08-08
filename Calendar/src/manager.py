@@ -20,6 +20,8 @@ class manager(object):
         else:
             temp = self.addEntry(other.title, other.date)
             self.editEntry(temp, other.title, other.location, other.time, other.duration)
+            if other.isComplete is True:
+                self.complete(temp)
 
 
     def addEntry(self, title, date):                     #Adds a new entry to a Calendar list
@@ -211,3 +213,30 @@ class manager(object):
         k.write("END:VEVENT\n")
         k.write("END:VCALENDAR")
         k.close()
+
+class entry(object):
+    "A basic to-do entry"
+    title = None
+    date = None
+    location = None
+    time = None
+    isComplete = None
+    duration = None
+    def __init__(self, initTitle, initDate):
+        self.title = initTitle
+        self.date = initDate
+        self.isComplete = False
+
+    #defines the greater-than relationship between any two entries
+    #   entries with no time or location (tasks) are the greatest, all tasks are equal
+    #   entries with time (events) are the least, events are comparable by time
+    #   entries with location and no time (errands) fall between, all errands are equal
+    def __gt__(self, other):
+        value = None
+        if type(other) is not entry:
+            print "ERROR! The second value is not an entry"
+        else:
+            if ((self.time is None) and (other.time is not None)) or ((self.location is None) and (other.location is not None)) or (((self.time is not None) and (other.time is not None)) and (self.time > other.time)):
+                value = True
+            else: value = False
+        return value
