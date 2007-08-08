@@ -4,31 +4,38 @@
 
 import wx
 
+# Define ID's for event handling 
+ID_EXPORT = 200
+ID_EXIT   = 201
+ID_HOWTO  = 202
+ID_ABOUT  = 203
+
 class toDoList(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: toDoList.__init__
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
-        
+
         # Menu Bar
         self.toDoList_menubar = wx.MenuBar()
         self.SetMenuBar(self.toDoList_menubar)
         wxglade_tmp_menu = wx.Menu()
         wxglade_tmp_menu.Append(wx.NewId(), "Export", "", wx.ITEM_NORMAL)
-        wxglade_tmp_menu.Append(wx.NewId(), "Exit", "", wx.ITEM_NORMAL)
+        wxglade_tmp_menu.Append(ID_EXIT, "Exit", "", wx.ITEM_NORMAL)
         self.toDoList_menubar.Append(wxglade_tmp_menu, "File")
         wxglade_tmp_menu = wx.Menu()
         wxglade_tmp_menu.Append(wx.NewId(), "How To", "", wx.ITEM_NORMAL)
         wxglade_tmp_menu.Append(wx.NewId(), "About", "", wx.ITEM_NORMAL)
         self.toDoList_menubar.Append(wxglade_tmp_menu, "Help")
         # Menu Bar end
-        # Date Selection
+        # Date Selection                                    @DateBlock
         self.previous = wx.Button(self, -1, "Previous")
         self.dateData = wx.StaticText(self, -1, "8/01/2007", style=wx.ALIGN_CENTRE)
         self.button_1 = wx.Button(self, -1, "Next")
-        # ListCtrl Cal_ControlList - The date's tasks
-        self.Cal_ControlList = wx.ListCtrl(self, -1, style=wx.LC_REPORT|wx.LC_SORT_ASCENDING|wx.LC_HRULES|wx.LC_VRULES|wx.SUNKEN_BORDER)
-        # Edit(Add) Entry Panel  
+        # ListCtrl Cal_ControlList - The date's tasks       @sizer_2
+        listID = wx.NewId()
+        self.Cal_ControlList = wx.ListCtrl(self, listID, style=wx.LC_REPORT|wx.LC_SORT_ASCENDING|wx.LC_HRULES|wx.LC_VRULES|wx.SUNKEN_BORDER)
+        # Edit(Add) Entry Panel                             @EntryData
         self.isComplete = wx.CheckBox(self, -1, "")
         self.title = wx.TextCtrl(self, -1, "")
         self.at = wx.StaticText(self, -1, "       at ")
@@ -38,7 +45,7 @@ class toDoList(wx.Frame):
         self.min = wx.SpinCtrl(self, -1, "", min=0, max=59)
         self.duration = wx.ComboBox(self, -1, choices=["", "15", "30", "45", "60", "75", "90", "105", "120", "135", "150", "165", "180", "195", "210", "225", "240", "255", "270", "285", "300"], style=wx.CB_DROPDOWN)
         self.inMinutes = wx.StaticText(self, -1, "minutes")
-        self.submit = wx.Button(self,100,"Submit")
+        self.submit = wx.Button(self,wx.NewId(),"Submit")
         
         self.__set_properties()
         self.__do_layout()
@@ -49,12 +56,19 @@ class toDoList(wx.Frame):
         self.Cal_ControlList.InsertColumn(2,"Location")
         self.Cal_ControlList.InsertColumn(3,"Time")
         self.Cal_ControlList.InsertColumn(4,"Duration")
+        # event - list control on click / double-click
+        self.currentItem = 0
+        wx.EVT_LIST_ITEM_SELECTED(self, listID, self.onItemSelected)
+        wx.EVT_LEFT_DCLICK(self.Cal_ControlList, self.onDoubleClick)
         # event - submitting an entry to the listctrl Cal_ControlList
         wx.EVT_BUTTON(self,self.submit.GetId(), self.pushSubmit)
         # event - selecting an entry to show on the Entry Panel
         # event - changing a date
-        # event - exit program
-        
+        # event - menu events : export, exit, howto, about
+        wx.EVT_MENU(self, ID_EXIT, self.exitCal)
+
+        #update view on listctrl at the end.("garbage collection")
+        self.updateView()
 
     def __set_properties(self):
         # begin wxGlade: toDoList.__set_properties
@@ -72,17 +86,21 @@ class toDoList(wx.Frame):
     def __do_layout(self):
         # begin wxGlade: toDoList.__do_layout
         listFrame = wx.BoxSizer(wx.VERTICAL)
+        #Intializing Boxsizers
         entryData = wx.BoxSizer(wx.HORIZONTAL)
         sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
         dateBlock = wx.BoxSizer(wx.HORIZONTAL)
+        #Placing GUI objects @dateBlock - The top section
         dateBlock.Add((0, 0), 0, wx.LEFT|wx.RIGHT|wx.ALIGN_CENTER_VERTICAL|wx.SHAPED, 60)
         dateBlock.Add(self.previous, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
         dateBlock.Add(self.dateData, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
         dateBlock.Add(self.button_1, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
         dateBlock.Add((0, 0), 0, wx.LEFT|wx.RIGHT|wx.ALIGN_CENTER_VERTICAL|wx.SHAPED, 60)
         listFrame.Add(dateBlock, 0, wx.EXPAND, 0)
+        #Placing GUI objects @sizer_2 - The middle
         sizer_2.Add(self.Cal_ControlList, 1, wx.EXPAND, 0)
         listFrame.Add(sizer_2, 1, wx.EXPAND, 0)
+        #Placing GUI objects @entryData - The bottom section
         entryData.Add(self.isComplete, 0, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.SHAPED, 0)
         entryData.Add(self.title, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.SHAPED, 0)
         entryData.Add(self.at, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.SHAPED, 0)
@@ -95,6 +113,7 @@ class toDoList(wx.Frame):
         entryData.Add(self.inMinutes, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.SHAPED, 0)
         entryData.Add(self.submit, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
         listFrame.Add(entryData, 0, wx.EXPAND, 0)
+        # Set
         self.SetSizer(listFrame)
         self.Layout()
         self.Centre()
@@ -102,7 +121,21 @@ class toDoList(wx.Frame):
 
     def pushSubmit(self, event):
         #event that submits the entry panel contents to listCtrl
-        self.Cal_ControlList.InsertStringItem(row, self.title)
+        self.Cal_ControlList.InsertStringItem(row, self.title) #TODO: replace row with variable
+
+    def exitCal(self, event):
+        #Quits The program
+        self.Close(True)
+
+    def onItemSelected(self, event):
+        #When user clicks on the entry on the list control, it should send the entry data to the entryplane
+        self.currentItem = event.m_itemIndex
+        pass
+
+    def onDoubleClick(self, event):
+        pass
+
+    def updateView(self):
         pass
     
 # end of class toDoList
