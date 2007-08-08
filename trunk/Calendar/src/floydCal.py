@@ -177,7 +177,7 @@ class toDoList(wx.Frame):
         #Add to manager
         self.m + e      #'+' is overloaded to add an entry to a mangager
 
-        #Add to list
+        #test the control list will need to be replaced
         dCom = self.m.dateList[0][1][self.i].isComplete
         dTitle = self.m.dateList[0][1][self.i].title
         dLoc = self.m.dateList[0][1][self.i].location
