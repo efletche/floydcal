@@ -20,12 +20,12 @@ class toDoList(wx.Frame):
         self.toDoList_menubar = wx.MenuBar()
         self.SetMenuBar(self.toDoList_menubar)
         wxglade_tmp_menu = wx.Menu()
-        wxglade_tmp_menu.Append(wx.NewId(), "Export", "", wx.ITEM_NORMAL)
+        wxglade_tmp_menu.Append(ID_EXPORT, "Export", "", wx.ITEM_NORMAL)
         wxglade_tmp_menu.Append(ID_EXIT, "Exit", "", wx.ITEM_NORMAL)
         self.toDoList_menubar.Append(wxglade_tmp_menu, "File")
         wxglade_tmp_menu = wx.Menu()
-        wxglade_tmp_menu.Append(wx.NewId(), "How To", "", wx.ITEM_NORMAL)
-        wxglade_tmp_menu.Append(wx.NewId(), "About", "", wx.ITEM_NORMAL)
+        wxglade_tmp_menu.Append(ID_HOWTO, "How To", "", wx.ITEM_NORMAL)
+        wxglade_tmp_menu.Append(ID_ABOUT, "About", "", wx.ITEM_NORMAL)
         self.toDoList_menubar.Append(wxglade_tmp_menu, "Help")
         # Menu Bar end
         # Date Selection                                    @DateBlock
@@ -65,8 +65,10 @@ class toDoList(wx.Frame):
         # event - selecting an entry to show on the Entry Panel
         # event - changing a date
         # event - menu events : export, exit, howto, about
-        wx.EVT_MENU(self, ID_EXIT, self.exitCal)
-
+        #wx.EVT_MENU(self, ID_EXPORT, self.exitCal) #TODO:export function
+        wx.EVT_MENU(self, ID_EXIT, self.exitCal)        
+        #wx.EVT_MENU(self, ID_HOWTO, self.exitCal)  #TODO:Help Function?
+        wx.EVT_MENU(self, ID_ABOUT, self.onAbout)        
         #update view on listctrl at the end.("garbage collection")
         self.updateView()
 
@@ -125,7 +127,17 @@ class toDoList(wx.Frame):
 
     def exitCal(self, event):
         #Quits The program
+        print "exit"
         self.Close(True)
+
+    def onAbout(self, event):
+        #Shows the "About" dialog box
+        dlg = wx.MessageDialog(self, "Schleduling Program for ICS 413\n"
+                              "2007 Eric Fletcher & Nathan Britton\n"
+                              "Woot.",
+                              "About FloydCal", wx.OK | wx.ICON_INFORMATION)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def onItemSelected(self, event):
         #When user clicks on the entry on the list control, it should send the entry data to the entryplane
