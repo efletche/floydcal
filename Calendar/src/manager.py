@@ -75,7 +75,7 @@ class manager(object):
             elif i == (len(self.dateList)-1):
                 print 'entry', tEntry.title, 'not found'
                 break
-        print "First Entry: ", self.dateList[0][1][0].title, "at",  self.dateList[0][1][0].time
+        #print "First Entry: ", self.dateList[0][1][0].title, "at",  self.dateList[0][1][0].time
         self.sort(tEntry.date)
         return tEntry
 
@@ -97,7 +97,7 @@ class manager(object):
 
     def sort(self, date):
         if type(date) is not datetime.date:
-            print 'ERROR, must pass an entry instance'
+            print 'ERROR, must pass a date to sort'
         else:
             for x in self.dateList:
                 if x[0] == date:
@@ -115,8 +115,10 @@ class manager(object):
                                 x[1][j] = x[1][i]
                                 x[1][i] = temp
                     break
+                elif x[0] < date:
+                    print "ERROR, no entries exist for that date"
             print 'list re-sorted'
-            print "First Entry: ", self.dateList[0][1][0].title, "at",  self.dateList[0][1][0].time
+            #print "First Entry: ", self.dateList[0][1][0].title, "at",  self.dateList[0][1][0].time
 
     def complete(self, entry):
         a = 'task not found'
@@ -248,7 +250,7 @@ class entry(object):
         if type(other) is not entry:
             print "ERROR! The second value is not an entry"
         else:
-            if ((self.time is None) and (other.time is not None)) or ((self.location is None) and (other.location is not None)) or (((self.time is not None) and (other.time is not None)) and (self.time > other.time)):
+            if ((self.time is None) and (other.time is not None)) or ((self.time is None) and (self.location is None) and (other.location is not None)) or (((self.time is not None) and (other.time is not None)) and (self.time > other.time)):
                 value = True
             else: value = False
         return value
