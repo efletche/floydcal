@@ -36,8 +36,8 @@ class toDoList(wx.Frame):
         # Menu Bar end
         # Date Selection                                    @DateBlock
         self.previous = wx.Button(self, -1, "Previous")
-        self.dateData = wx.StaticText(self, -1, "8/01/2007", style=wx.ALIGN_CENTRE)
-        self.button_1 = wx.Button(self, -1, "Next")
+        self.datepicker = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
+        self.next = wx.Button(self, -1, "Next")
         # ListCtrl Cal_ControlList - The date's tasks       @sizer_2
         listID = wx.NewId()
         self.Cal_ControlList = wx.ListCtrl(self, listID, style=wx.LC_REPORT|wx.LC_HRULES|wx.LC_VRULES|wx.SUNKEN_BORDER)
@@ -55,15 +55,18 @@ class toDoList(wx.Frame):
         #Label with extra spaces preceeding to buffer between text and location box:
         self.Time = wx.StaticText(self, -1, "      Time:", style=wx.ALIGN_CENTRE)
         #Hours 0-23; 24-hour clock:
-        self.hour = wx.SpinCtrl(self, -1, "", min=0, max=23)
+        self.hour = wx.SpinCtrl(self, -1, "", min=-1, max=23)
+        self.hour.SetValue(-1)
         #Minutes 0-59:
-        self.min = wx.SpinCtrl(self, -1, "", min=0, max=59)
+        self.min = wx.SpinCtrl(self, -1, "", min=-1, max=59)
+        self.min.SetValue(-1)
         #Durations available in 15 minutes intervals:
         self.duration = wx.ComboBox(self, -1, choices=["", "15", "30", "45", "60", "75", "90", "105", "120", "135", "150", "165", "180", "195", "210", "225", "240", "255", "270", "285", "300"], style=wx.CB_DROPDOWN)
         #duration label (so the user knows what the box is for)
         #w/extra @ the end to make space for the submit button:
         self.inMinutes = wx.StaticText(self, -1, "minutes long   ")
         self.submit = wx.Button(self,wx.NewId(),"Submit")
+        self.edit = wx.Button(self,wx.NewId(),"Edit")
 
         self.__set_properties()
         self.__do_layout()
@@ -77,9 +80,14 @@ class toDoList(wx.Frame):
         # event - list control on click / double-click
         self.currentItem = 0
         wx.EVT_LIST_ITEM_SELECTED(self, listID, self.onItemSelected)
+        wx.EVT_LIST_ITEM_DESELECTED(self, listID, self.onItemDeselected)
         wx.EVT_LEFT_DCLICK(self.Cal_ControlList, self.onDoubleClick)
         # event - submitting an entry to the listctrl Cal_ControlList
         wx.EVT_BUTTON(self,self.submit.GetId(), self.pushSubmit)
+        wx.EVT_BUTTON(self,self.edit.GetId(),self.pushEdit)
+        wx.EVT_BUTTON(self,self.previous.GetId(),self.pushPrev)
+        wx.EVT_BUTTON(self,self.next.GetId(),self.pushNext)
+        wx.EVT_DATE_CHANGED(self, self.datepicker.GetId(),self.dateChanged)
         # event - selecting an entry to show on the Entry Panel
         # event - changing a date
         # event - menu events : export, exit, howto, about
@@ -99,7 +107,8 @@ class toDoList(wx.Frame):
     def __set_properties(self):
         # begin wxGlade: toDoList.__set_properties
         self.SetTitle("Floyd")
-        self.SetSize((800, 450))
+        self.SetSize((875, 450))
+        self.datepicker.SetMinSize((150, 25))
         self.isComplete.SetMinSize((30, 30))
         self.title.SetMinSize((120, 24))
         self.location.SetMinSize((120, 24))
@@ -119,8 +128,8 @@ class toDoList(wx.Frame):
         #Placing GUI objects @dateBlock - The top section
         dateBlock.Add((0, 0), 0, wx.LEFT|wx.RIGHT|wx.ALIGN_CENTER_VERTICAL|wx.SHAPED, 60)
         dateBlock.Add(self.previous, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
-        dateBlock.Add(self.dateData, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
-        dateBlock.Add(self.button_1, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
+        dateBlock.Add(self.datepicker, 0, wx.LEFT|wx.RIGHT, 60)
+        dateBlock.Add(self.next, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
         dateBlock.Add((0, 0), 0, wx.LEFT|wx.RIGHT|wx.ALIGN_CENTER_VERTICAL|wx.SHAPED, 60)
         listFrame.Add(dateBlock, 0, wx.EXPAND, 0)
         #Placing GUI objects @sizer_2 - The middle
@@ -138,6 +147,8 @@ class toDoList(wx.Frame):
         entryData.Add(self.duration, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.SHAPED, 0)
         entryData.Add(self.inMinutes, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.SHAPED, 0)
         entryData.Add(self.submit, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
+        entryData.Add(self.edit, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
+        self.edit.Enable(False)
         listFrame.Add(entryData, 0, wx.EXPAND, 0)
         # Layout Setup
         self.SetSizer(listFrame)
@@ -152,24 +163,31 @@ class toDoList(wx.Frame):
         thisComp = self.isComplete.GetValue()
         thisTitle = str(self.title.GetLineText(0))
         thisLoc = str(self.location.GetLineText(0))
+        if thisLoc is '':
+            thisLoc = None
         hr = self.hour.GetValue()
         mn = self.min.GetValue()
-        thisTime = time(hr, mn)
+        if (hr or mn) is -1:
+            thisTime = None
+        else:
+            thisTime = time(hr, mn)
         try:
             thisDur = int(self.duration.GetValue())
         except ValueError:
-            thisDur = 0
+            thisDur = None
+        thisDate = self.currentDate()
 
         print "isComplete = " + str(thisComp)
         print "Title = " + thisTitle
-        print "Location = " + thisLoc
+        print "Location = " + str(thisLoc)
         #print "hours = " + str(hr)
         #print "minutes = " + str(mn)
-        print "Time = " + thisTime.isoformat()
+        if thisTime is not None: print "Time = " + thisTime.isoformat()
         print "Duration = " + str(thisDur)
+        print "Date =" + thisDate.isoformat()
 
         #Create entry
-        e = entry(thisTitle, date.today())
+        e = entry(thisTitle, thisDate)
         e.location = thisLoc
         e.time = thisTime
         e.duration = thisDur
@@ -177,9 +195,67 @@ class toDoList(wx.Frame):
 
         #Add to manager
         self.m + e      #'+' is overloaded to add an entry to a mangager
+        #thisEntry = self.m.addEntry(thisTitle, thisDate)
+        #self.m.editEntry(thisEntry, None, thisLoc, thisTime, thisDur)
+        #if thisComp is True:
+        #    self.m.complete(thisEntry)
+
         self.updateView()
 
+        self.clearValues()
+
         print "GHAAAA!"
+
+    def pushEdit(self, event):
+        index = self.Cal_ControlList.GetFocusedItem()
+        thisComp = self.isComplete.GetValue()
+        thisTitle = str(self.title.GetLineText(0))
+        thisLoc = str(self.location.GetLineText(0))
+        if thisLoc is '':
+            thisLoc = None
+        hr = self.hour.GetValue()
+        mn = self.min.GetValue()
+        if (hr or mn) is -1:
+            thisTime = None
+        else:
+            thisTime = time(hr, mn)
+        try:
+            thisDur = int(self.duration.GetValue())
+        except ValueError:
+            thisDur = None
+        thisDate = self.currentDate()
+
+        for x in self.m.dateList:
+            if x[0] == self.currentDate():
+                print "ee",thisTitle,thisLoc
+                self.m.editEntry(x[1][index], thisTitle, thisLoc, thisTime, thisDur)
+                break
+        self.submit.Enable(True)
+        self.edit.Enable(False)
+        self.updateView()
+        self.clearValues()
+
+    #Goes back one day
+    def pushPrev(self, event):
+        #This is way overcomplicated, needs to be looked over for synergy with datepicker methods
+        temp = self.currentDate()
+        newDate = temp + datetime.timedelta(-1)
+        dt = self.datepicker.GetValue()
+        dt.SetMonth(newDate.month - 1)
+        dt.SetDay(newDate.day)
+        self.datepicker.SetValue(dt)
+        self.updateView()
+
+    #Advanced date forward 1 day
+    def pushNext(self, event):
+        #This is way overcomplicated, needs to be looked over for synergy with datepicker methods
+        temp = self.currentDate()
+        newDate = temp + datetime.timedelta(1)
+        dt = self.datepicker.GetValue()
+        dt.SetMonth(newDate.month - 1)
+        dt.SetDay(newDate.day)
+        self.datepicker.SetValue(dt)
+        self.updateView()
 
     def exitCal(self, event):
         #Quits The program
@@ -196,35 +272,84 @@ class toDoList(wx.Frame):
         dlg.Destroy()
 
     def onExport(self, event):
-        #!!!NEEDS TO BE CHANGED TO THE DATE SELECTED!!!
-        self.m.export(date.today())
+        self.m.export(self.currentDate())
+
+    def onItemDeselected(self, event):
+        self.submit.Enable(True)
+        self.edit.Enable(False)
 
     def onItemSelected(self, event):
-        #When user clicks on the entry on the list control, it should send the entry data to the entryplane
-        self.currentItem = event.m_itemIndex
-        pass
+        #Grab text fields and assign them to variables
+        index = self.Cal_ControlList.GetFocusedItem()
+        sCom = self.Cal_ControlList.GetItem(index, 0).GetText()
+        sTitle = self.Cal_ControlList.GetItem(index, 1).GetText()
+        sLoc = self.Cal_ControlList.GetItem(index, 2).GetText()
+        sTime = self.Cal_ControlList.GetItem(index, 3).GetText()
+        sDur = self.Cal_ControlList.GetItem(index, 4).GetText()
+        if sTime != '':
+            #Taking the first two values from the isoformat string
+            sHr = int(sTime[:2])
+            #Taking the 3rd and 4th values for minutes
+            sMn = int(sTime[3:5])
+
+        #Display the data in the fields available
+        if sCom == "True": self.isComplete.SetValue(True)
+        else: self.isComplete.SetValue(False)
+        self.title.SetValue(sTitle)
+        self.location.SetValue(sLoc)
+        if sTime != '':
+            self.hour.SetValue(sHr)
+            self.min.SetValue(sMn)
+        self.duration.SetValue(sDur)
+
+        #identify the entry that is selected
+
+        self.submit.Enable(False)
+        self.edit.Enable(True)
 
     def onDoubleClick(self, event):
         pass
 
+    def dateChanged(self, event):
+        self.updateView()
+
     def updateView(self):
         self.Cal_ControlList.DeleteAllItems()
         if len(self.m.dateList) is not 0:
-            for i in range(len(self.m.dateList[0][1])):
-                dCom = self.m.dateList[0][1][i].isComplete
-                dTitle = self.m.dateList[0][1][i].title
-                dLoc = self.m.dateList[0][1][i].location
-                dTime = self.m.dateList[0][1][i].time.isoformat()
-                dDur = str(self.m.dateList[0][1][i].duration)
-                #self.Cal_ControlList.InsertStringItem(i, "Title", dTitle)#[dCom, dTitle, dLoc, dTime, dDur])
-                #Now fill the list
-                self.Cal_ControlList.InsertStringItem(i, str(dCom))
-                self.Cal_ControlList.SetStringItem(i, 1, dTitle)
-                self.Cal_ControlList.SetStringItem(i, 2, dLoc)
-                self.Cal_ControlList.SetStringItem(i, 3, dTime)
-                self.Cal_ControlList.SetStringItem(i, 4, dDur)
-                print "Printing entry :" , dCom, dTitle, dLoc, dTime, dDur
+            for x in self.m.dateList:
+                if x[0] == self.currentDate():
+                    for i in range(len(x[1])):
+                        dCom = x[1][i].isComplete
+                        dTitle = x[1][i].title
+                        dLoc = x[1][i].location
+                        if dLoc is None:
+                            dLoc = ''
+                        dTime = x[1][i].time
+                        if dTime is not None:
+                            dTime = dTime.isoformat()
+                        else:
+                            dTime = ''
+                        dDur = str(x[1][i].duration)
+                        if dDur == "None":
+                            dDur = ''
+                        #Now fill the list
+                        self.Cal_ControlList.InsertStringItem(i, str(dCom))
+                        self.Cal_ControlList.SetStringItem(i, 1, dTitle)
+                        self.Cal_ControlList.SetStringItem(i, 2, dLoc)
+                        self.Cal_ControlList.SetStringItem(i, 3, dTime)
+                        self.Cal_ControlList.SetStringItem(i, 4, dDur)
+                        #print "Printing entry :" , dCom, dTitle, dLoc, dTime, dDur
 
+    def clearValues(self):
+        self.isComplete.SetValue(False)
+        self.title.SetValue('')
+        self.location.SetValue('')
+        self.hour.SetValue(-1)
+        self.min.SetValue(-1)
+        self.duration.SetValue('')
+
+    def currentDate(self):
+        return date(self.datepicker.GetValue().GetYear(), (self.datepicker.GetValue().GetMonth() +1),self.datepicker.GetValue().GetDay())
 # end of class toDoList
 
 
