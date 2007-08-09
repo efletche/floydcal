@@ -34,20 +34,20 @@ class toDoList(wx.Frame):
         menuBar.Append(ID_ABOUT, "About", "Credits", wx.ITEM_NORMAL)
         self.toDoList_menubar.Append(menuBar, "Help")
         # Menu Bar end
-        # Date Selection                                    @DateBlock
+        # -- DateBlock --- Date Selection                                    
         self.previous = wx.Button(self, -1, "Previous")
         self.datepicker = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
         self.next = wx.Button(self, -1, "Next")
-        # ListCtrl Cal_ControlList - The date's tasks       @sizer_2
+        # -- sizer_2 -- ListCtrl Cal_ControlList - The date's tasks       
         listID = wx.NewId()
         self.Cal_ControlList = wx.ListCtrl(self, listID, style=wx.LC_REPORT|wx.LC_HRULES|wx.LC_VRULES|wx.SUNKEN_BORDER)
-        # Edit(Add) Entry Panel                             @EntryData
+        # -- EntryData -- Edit(Add) Entry Panel                             
         #Check box to complete an event
         self.isComplete = wx.CheckBox(self, -1, "")
         #Entry box for Title of event
         self.title = wx.TextCtrl(self, -1, "")
         #location label "takes place at":
-        self.at = wx.StaticText(self, -1, "       at ")
+        self.at = wx.StaticText(self, -1, "     at ")
         #Entry box for the location
         self.location = wx.TextCtrl(self, -1, "")
 
@@ -67,6 +67,7 @@ class toDoList(wx.Frame):
         self.inMinutes = wx.StaticText(self, -1, "minutes long   ")
         self.submit = wx.Button(self,wx.NewId(),"Submit")
         self.edit = wx.Button(self,wx.NewId(),"Edit")
+        self.remove = wx.Button(self,wx.NewId(),"Remove")
 
         self.__set_properties()
         self.__do_layout()
@@ -77,7 +78,7 @@ class toDoList(wx.Frame):
         self.Cal_ControlList.InsertColumn(2,"Location")
         self.Cal_ControlList.InsertColumn(3,"Time")
         self.Cal_ControlList.InsertColumn(4,"Duration")
-        # event - list control on click / double-click
+        # event - selecting (or deselecting) an entry to show on EntryData sizer on click 
         self.currentItem = 0
         wx.EVT_LIST_ITEM_SELECTED(self, listID, self.onItemSelected)
         wx.EVT_LIST_ITEM_DESELECTED(self, listID, self.onItemDeselected)
@@ -85,13 +86,12 @@ class toDoList(wx.Frame):
         # event - submitting an entry to the listctrl Cal_ControlList
         wx.EVT_BUTTON(self,self.submit.GetId(), self.pushSubmit)
         wx.EVT_BUTTON(self,self.edit.GetId(),self.pushEdit)
+        wx.EVT_BUTTON(self,self.remove.GetId(),self.pushRemove)
+        # event - changing a date
         wx.EVT_BUTTON(self,self.previous.GetId(),self.pushPrev)
         wx.EVT_BUTTON(self,self.next.GetId(),self.pushNext)
         wx.EVT_DATE_CHANGED(self, self.datepicker.GetId(),self.dateChanged)
-        # event - selecting an entry to show on the Entry Panel
-        # event - changing a date
         # event - menu events : export, exit, howto, about
-        #wx.EVT_MENU(self, ID_EXPORT, self.exitCal) #TODO:export function
         wx.EVT_MENU(self, ID_EXIT, self.exitCal)
         #wx.EVT_MENU(self, ID_HOWTO, self.exitCal)  #TODO:Help Function?
         wx.EVT_MENU(self, ID_ABOUT, self.onAbout)
@@ -116,6 +116,7 @@ class toDoList(wx.Frame):
         self.min.SetMinSize((55, 25))
         self.duration.SetMinSize((60, 21))
         self.duration.SetSelection(-1)
+        self.remove.Enable(False)
         # end wxGlade
 
     def __do_layout(self):
@@ -149,6 +150,7 @@ class toDoList(wx.Frame):
         entryData.Add(self.submit, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
         entryData.Add(self.edit, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
         self.edit.Enable(False)
+        entryData.Add(self.remove, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
         listFrame.Add(entryData, 0, wx.EXPAND, 0)
         # Layout Setup
         self.SetSizer(listFrame)
@@ -235,6 +237,20 @@ class toDoList(wx.Frame):
         self.updateView()
         self.clearValues()
 
+    def pushRemove(self, event):
+        """Removes the selected entry"""
+        index = self.Cal_ControlList.GetFocusedItem()
+        for x in self.m.dateList:
+            if x[0] == self.currentDate():
+                self.m.removeEntry(x[1][index])
+                break
+        self.submit.Enable(True)
+        self.edit.Enable(False)
+        self.remove.Enable(False)
+        self.updateView()
+        self.clearValues()
+        pass
+
     #Goes back one day
     def pushPrev(self, event):
         #This is way overcomplicated, needs to be looked over for synergy with datepicker methods
@@ -277,6 +293,7 @@ class toDoList(wx.Frame):
     def onItemDeselected(self, event):
         self.submit.Enable(True)
         self.edit.Enable(False)
+        self.remove.Enable(False)
 
     def onItemSelected(self, event):
         #Grab text fields and assign them to variables
@@ -306,6 +323,7 @@ class toDoList(wx.Frame):
 
         self.submit.Enable(False)
         self.edit.Enable(True)
+        self.remove.Enable(True)
 
     def onDoubleClick(self, event):
         pass
