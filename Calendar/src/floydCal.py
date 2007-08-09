@@ -40,7 +40,7 @@ class toDoList(wx.Frame):
         self.button_1 = wx.Button(self, -1, "Next")
         # ListCtrl Cal_ControlList - The date's tasks       @sizer_2
         listID = wx.NewId()
-        self.Cal_ControlList = wx.ListCtrl(self, listID, style=wx.LC_REPORT|wx.LC_SORT_ASCENDING|wx.LC_HRULES|wx.LC_VRULES|wx.SUNKEN_BORDER)
+        self.Cal_ControlList = wx.ListCtrl(self, listID, style=wx.LC_REPORT|wx.LC_HRULES|wx.LC_VRULES|wx.SUNKEN_BORDER)
         # Edit(Add) Entry Panel                             @EntryData
         #Check box to complete an event
         self.isComplete = wx.CheckBox(self, -1, "")
@@ -139,7 +139,7 @@ class toDoList(wx.Frame):
         entryData.Add(self.inMinutes, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.SHAPED, 0)
         entryData.Add(self.submit, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
         listFrame.Add(entryData, 0, wx.EXPAND, 0)
-        # Set
+        # Layout Setup
         self.SetSizer(listFrame)
         self.Layout()
         self.Centre()
@@ -208,7 +208,6 @@ class toDoList(wx.Frame):
         pass
 
     def updateView(self):
-
         self.Cal_ControlList.DeleteAllItems()
         if len(self.m.dateList) is not 0:
             for i in range(len(self.m.dateList[0][1])):
@@ -224,7 +223,7 @@ class toDoList(wx.Frame):
                 self.Cal_ControlList.SetStringItem(i, 2, dLoc)
                 self.Cal_ControlList.SetStringItem(i, 3, dTime)
                 self.Cal_ControlList.SetStringItem(i, 4, dDur)
-        pass
+                print "Printing entry :" , dCom, dTitle, dLoc, dTime, dDur
 
 # end of class toDoList
 

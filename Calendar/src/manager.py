@@ -1,4 +1,12 @@
 #!/usr/bin/python
+"""
+A note on the dateList Structure:
+dateList[0] is the tuple of the first day.
+dateList[0][0] is the actual date value of the first day. (DateTuples)
+dateList[0][1] is the event list of the first day. (DateTuples)
+dateList[0][1][0] is the first event of the first day. (Entry)
+dateList[1] the tuple of the second day
+"""
 from datetime import date
 from datetime import time
 import datetime
@@ -67,6 +75,7 @@ class manager(object):
             elif i == (len(self.dateList)-1):
                 print 'entry', tEntry.title, 'not found'
                 break
+        print "First Entry: ", self.dateList[0][1][0].title, "at",  self.dateList[0][1][0].time
         self.sort(tEntry.date)
         return tEntry
 
@@ -107,7 +116,7 @@ class manager(object):
                                 x[1][i] = temp
                     break
             print 'list re-sorted'
-
+            print "First Entry: ", self.dateList[0][1][0].title, "at",  self.dateList[0][1][0].time
 
     def complete(self, entry):
         a = 'task not found'
