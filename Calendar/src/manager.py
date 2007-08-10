@@ -1,5 +1,10 @@
 #!/usr/bin/python
 """
+File: manager.py
+ICS 413 Project
+
+Description: the Basic function of a schleduing calendar.
+
 A note on the dateList Structure:
 dateList[0] is the tuple of the first day.
 dateList[0][0] is the actual date value of the first day. (DateTuples)
@@ -96,6 +101,7 @@ class manager(object):
 
 
     def sort(self, date):
+        """Sorts The Datelist by their time"""
         if type(date) is not datetime.date:
             print 'ERROR, must pass a date to sort'
         else:
@@ -121,6 +127,7 @@ class manager(object):
             #print "First Entry: ", self.dateList[0][1][0].title, "at",  self.dateList[0][1][0].time
 
     def complete(self, entry):
+        """Tells the user if a task is completed"""
         a = 'task not found'
         for i in range(len(self.dateList)):
             if self.dateList[i][0] == entry.date:
@@ -133,6 +140,7 @@ class manager(object):
         print a
 
     def export(self, target):
+        """Function that gets the floydcal data ready to be wirtten into an *.ics file format"""
         mkTrunk = True
         print os.getcwd()
         for f in os.listdir(os.getcwd() + '/'):
@@ -189,6 +197,7 @@ class manager(object):
 
 
     def exportEntry(self, entry, path):
+        """Function that writes every entry into a *.ics file"""
         apNum = ''
         num = 0
         for i in os.listdir(path):
