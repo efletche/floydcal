@@ -34,14 +34,14 @@ class toDoList(wx.Frame):
         menuBar.Append(ID_ABOUT, "About", "Credits", wx.ITEM_NORMAL)
         self.toDoList_menubar.Append(menuBar, "Help")
         # Menu Bar end
-        # -- DateBlock --- Date Selection                                    
+        # -- DateBlock --- Date Selection
         self.previous = wx.Button(self, -1, "Previous")
         self.datepicker = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
         self.next = wx.Button(self, -1, "Next")
-        # -- sizer_2 -- ListCtrl Cal_ControlList - The date's tasks       
+        # -- sizer_2 -- ListCtrl Cal_ControlList - The date's tasks
         listID = wx.NewId()
         self.Cal_ControlList = wx.ListCtrl(self, listID, style=wx.LC_REPORT|wx.LC_HRULES|wx.LC_VRULES|wx.SUNKEN_BORDER)
-        # -- EntryData -- Edit(Add) Entry Panel                             
+        # -- EntryData -- Edit(Add) Entry Panel
         #Check box to complete an event
         self.isComplete = wx.CheckBox(self, -1, "")
         #Entry box for Title of event
@@ -78,7 +78,7 @@ class toDoList(wx.Frame):
         self.Cal_ControlList.InsertColumn(2,"Location")
         self.Cal_ControlList.InsertColumn(3,"Time")
         self.Cal_ControlList.InsertColumn(4,"Duration")
-        # event - selecting (or deselecting) an entry to show on EntryData sizer on click 
+        # event - selecting (or deselecting) an entry to show on EntryData sizer on click
         self.currentItem = 0
         wx.EVT_LIST_ITEM_SELECTED(self, listID, self.onItemSelected)
         wx.EVT_LIST_ITEM_DESELECTED(self, listID, self.onItemDeselected)
@@ -93,7 +93,7 @@ class toDoList(wx.Frame):
         wx.EVT_DATE_CHANGED(self, self.datepicker.GetId(),self.dateChanged)
         # event - menu events : export, exit, howto, about
         wx.EVT_MENU(self, ID_EXIT, self.exitCal)
-        #wx.EVT_MENU(self, ID_HOWTO, self.exitCal)  #TODO:Help Function?
+        wx.EVT_MENU(self, ID_HOWTO, self.onHowTo)
         wx.EVT_MENU(self, ID_ABOUT, self.onAbout)
         wx.EVT_MENU(self, ID_EXPORT, self.onExport)
 
@@ -107,7 +107,7 @@ class toDoList(wx.Frame):
     def __set_properties(self):
         # begin wxGlade: toDoList.__set_properties
         self.SetTitle("Floyd")
-        self.SetSize((875, 450))
+        self.SetSize((700, 450))
         self.datepicker.SetMinSize((150, 25))
         self.isComplete.SetMinSize((30, 30))
         self.title.SetMinSize((120, 24))
@@ -117,6 +117,7 @@ class toDoList(wx.Frame):
         self.duration.SetMinSize((60, 21))
         self.duration.SetSelection(-1)
         self.remove.Enable(False)
+        self.edit.Enable(False)
         # end wxGlade
 
     def __do_layout(self):
@@ -126,6 +127,7 @@ class toDoList(wx.Frame):
         entryData = wx.BoxSizer(wx.HORIZONTAL)
         sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
         dateBlock = wx.BoxSizer(wx.HORIZONTAL)
+        buttons = wx.BoxSizer(wx.HORIZONTAL)
         #Placing GUI objects @dateBlock - The top section
         dateBlock.Add((0, 0), 0, wx.LEFT|wx.RIGHT|wx.ALIGN_CENTER_VERTICAL|wx.SHAPED, 60)
         dateBlock.Add(self.previous, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
@@ -147,11 +149,11 @@ class toDoList(wx.Frame):
         entryData.Add((0, 0), 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.SHAPED, 25)
         entryData.Add(self.duration, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.SHAPED, 0)
         entryData.Add(self.inMinutes, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.SHAPED, 0)
-        entryData.Add(self.submit, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
-        entryData.Add(self.edit, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
-        self.edit.Enable(False)
-        entryData.Add(self.remove, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
+        buttons.Add(self.submit, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
+        buttons.Add(self.edit, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
+        buttons.Add(self.remove, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
         listFrame.Add(entryData, 0, wx.EXPAND, 0)
+        listFrame.Add(buttons, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 0)
         # Layout Setup
         self.SetSizer(listFrame)
         self.Layout()
@@ -213,8 +215,6 @@ class toDoList(wx.Frame):
         thisComp = self.isComplete.GetValue()
         thisTitle = str(self.title.GetLineText(0))
         thisLoc = str(self.location.GetLineText(0))
-        if thisLoc is '':
-            thisLoc = None
         hr = self.hour.GetValue()
         mn = self.min.GetValue()
         if (hr or mn) is -1:
@@ -231,7 +231,10 @@ class toDoList(wx.Frame):
             if x[0] == self.currentDate():
                 print "ee",thisTitle,thisLoc
                 self.m.editEntry(x[1][index], thisTitle, thisLoc, thisTime, thisDur)
+                if thisComp is True:
+                    self.m.complete(x[1][index])
                 break
+
         self.submit.Enable(True)
         self.edit.Enable(False)
         self.updateView()
@@ -284,6 +287,17 @@ class toDoList(wx.Frame):
                               "2007 Eric Fletcher & Nathan Britton\n"
                               "Woot.",
                               "About FloydCal", wx.OK | wx.ICON_INFORMATION)
+        dlg.ShowModal()
+        dlg.Destroy()
+
+    def onHowTo(self, event):
+        dlg = wx.MessageDialog(self,
+            "Fill the data fields on the bottom with the details of\n"
+            "your event. The checkbox indicates whether the event has\n"
+            "been completed, and the first data field is the name\n"
+            "of the event.\n"
+            "Click on an entry to edit or delete it.  ", "",
+            wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
 
